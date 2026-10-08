@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deliveree — Dispatch Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ---------- Deliveree brand kit (symbols + preloader CSS) ---------- */
+      :root {
+        --dlv-ink: #f8fafc;        /* primary text / strokes        */
+        --dlv-paper: #020617;     /* surfaces                      */
+        --dlv-accent: #12b76a;    /* Deliveree accent (brand-kit green) */
+        --dlv-accent-soft: #1cc48e;
+        --dlv-line: rgba(148, 163, 184, 0.25);
+        --dlv-muted: #94a3b8;
+        --dlv-radius: 16px;
+        --dlv-font: "Space Grotesk", ui-sans-serif, system-ui;
+      }
+      .dlv-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--dlv-paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity .45s ease, visibility .45s;
+      }
+      .dlv-overlay.dlv-done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .dlv-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 280px;
+      }
+      .dlv-stage {
+        position: relative;
+        width: 100%;
+        height: 120px;
+      }
+      .dlv-truck {
+        position: absolute;
+        top: 34px;
+        left: 0;
+        width: 96px;
+        will-change: transform;
+      }
+      .dlv-wheel {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: dlv-spin .7s linear infinite;
+      }
+      .dlv-speed {
+        stroke-dasharray: 6 6;
+        animation: dlv-dash .5s linear infinite;
+      }
+      @keyframes dlv-dash { to { stroke-dashoffset: -24; } }
+      @media (prefers-reduced-motion: reduce) { .dlv-wheel, .dlv-speed { animation: none; } }
+      .dlv-route {
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        bottom: 22px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.25);
+      }
+      .dlv-route i {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 0%;
+        border-radius: 999px;
+        background: var(--dlv-accent);
+      }
+      .dlv-check {
+        position: absolute;
+        right: 2px;
+        bottom: 38px;
+        opacity: 0;
+        transform: scale(.4);
+        transition: all .18s ease-out;
+      }
+      .dlv-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        width: 100%;
+      }
+      .dlv-pct {
+        font-size: 18px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--dlv-ink);
+      }
+      .dlv-status {
+        font-size: 13px;
+        color: var(--dlv-muted);
+      }
+      .dlv-wordmark {
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 1.1;
+        color: var(--dlv-ink);
+        margin-top: 4px;
+      }
+      .dlv-wordmark em {
+        font-style: normal;
+        color: var(--dlv-accent);
+      }
+
+      /* dlv-spin: reusable spin keyframe (used by brand-kit preloader ring) */
+      @keyframes dlv-spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    <!-- brand-kit SVG symbols: Deliveree logo mark + truck -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="dlv-mark" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 30h8M6 40h8" class="dlv-a" stroke="#12b76a" stroke-width="4"/>
+        <rect x="18" y="24" width="40" height="32" rx="7" stroke="currentColor" stroke-width="4"/>
+        <path d="M24 24l6-8h18l6 8" stroke="currentColor" stroke-width="4"/>
+        <path d="M34 46L46 34m0 0h-8m8 0v8" class="dlv-a" stroke="#12b76a" stroke-width="4"/>
+      </symbol>
+      <symbol id="dlv-truck" viewBox="0 0 128 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <g class="dlv-speed" stroke="#12b76a" stroke-width="3">
+          <path d="M4 28h12"/><path d="M0 38h16"/>
+        </g>
+        <g stroke="currentColor" stroke-width="4">
+          <rect x="20" y="12" width="54" height="38" rx="7"/>
+          <path d="M28 12l6-7h26l6 7"/>
+          <path d="M74 24h15l12 13v13H74z"/>
+          <path d="M89 24v11h11"/>
+        </g>
+        <path d="M38 42L52 28m0 0h-8m8 0v8" stroke="#12b76a" stroke-width="4"/>
+        <g class="dlv-wheel" stroke="currentColor" stroke-width="4">
+          <circle cx="38" cy="58" r="8"/><path d="M38 58v-6"/>
+        </g>
+        <g class="dlv-wheel" stroke="currentColor" stroke-width="4">
+          <circle cx="94" cy="58" r="8"/><path d="M94 58v-6"/>
+        </g>
+      </symbol>
+    </svg>
+  </head>
+  <body class="bg-slate-950">
+    <div id="root"></div>
+
+    <!-- ===== brand-kit preloader overlay ===== -->
+    <div class="dlv-overlay" id="dlv-preloader" role="status" aria-label="Loading">
+      <div class="dlv-card">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <svg width="44" height="44" style="color:var(--dlv-ink)" aria-hidden="true">
+            <use href="#dlv-mark"/>
+          </svg>
+          <span class="dlv-wordmark" style="margin-top: 0;">Delive<em>ree</em></span>
+        </div>
+        <div class="dlv-stage" id="dlvStage">
+          <div class="dlv-truck" id="dlvTruck">
+            <svg width="96" viewBox="0 0 128 72" style="display:block;color:var(--dlv-ink)" aria-hidden="true">
+              <use href="#dlv-truck"/>
+            </svg>
+          </div>
+          <div class="dlv-route"><i id="dlvFill"></i></div>
+          <div class="dlv-check" id="dlvCheck">
+            <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
+              <circle cx="14" cy="14" r="13" fill="var(--dlv-accent)"/>
+              <path d="M8.5 14.5l4 4 7-8" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="dlv-meta">
+          <span class="dlv-pct" id="dlvPct">0%</span>
+          <span class="dlv-status" id="dlvStatus">en route</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- ===== brand-kit DLV script ===== -->
+    <script>
+    (function(){
+      var overlay=document.getElementById('dlv-preloader'),
+          truck=document.getElementById('dlvTruck'),
+          fill=document.getElementById('dlvFill'),
+          pct=document.getElementById('dlvPct'),
+          status=document.getElementById('dlvStatus'),
+          check=document.getElementById('dlvCheck'),
+          stage=document.getElementById('dlvStage');
+      var t0=performance.now(),DUR=2600,raf,doneTimer,finished=false;
+      function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+      function frame(now){
+        if(finished){return;}
+        var raw=Math.min((now-t0)/DUR,1),p=ease(raw);
+        var max=stage.clientWidth-truck.offsetWidth-8;
+        truck.style.transform='translateX('+(4+p*max)+'px)';
+        fill.style.width=(p*100)+'%';
+        pct.textContent=Math.round(p*100)+'%';
+        raf=requestAnimationFrame(frame);
+      }
+      raf=requestAnimationFrame(frame);
+      window.DLV={
+        /* Call when content is ready — completes to 100%, shows check, fades. */
+        done:function(){
+          if(finished){return;}
+          finished=true; cancelAnimationFrame(raf);
+          var max=stage.clientWidth-truck.offsetWidth-8;
+          truck.style.transform='translateX('+(4+max)+'px)';
+          fill.style.width='100%'; pct.textContent='100%';
+          status.textContent='delivered'; status.style.color='var(--dlv-accent)';
+          check.style.opacity=1; check.style.transform='scale(1)';
+          doneTimer=setTimeout(function(){overlay.classList.add('dlv-done');},650);
+        },
+        /* Instantly hide — used for no-session path so login page shows immediately. */
+        hide:function(){
+          finished=true; cancelAnimationFrame(raf); clearTimeout(doneTimer);
+          overlay.classList.add('dlv-done');
+        },
+        /* Bring the preloader back for subsequent data loads (role switch etc.). */
+        restart:function(){
+          finished=false; cancelAnimationFrame(raf); clearTimeout(doneTimer);
+          overlay.classList.remove('dlv-done');
+          status.style.color=''; check.style.opacity=0; check.style.transform='scale(.4)';
+          fill.style.width='0%'; pct.textContent='0%';
+          t0=performance.now(); raf=requestAnimationFrame(frame);
+        }
+      };
+    })();
+    </script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deliveree — logo &amp; preloader kit</title>
+<!--
+  DELIVEREE BRAND KIT
+  1. Copy the <svg><symbol> block, the .dlv-* CSS, the #dlv-preloader HTML,
+     and the <script> at the bottom into your page.
+  2. Call DLV.done() when your app has finished loading — the preloader
+     completes to 100%, shows the delivered check, then fades out.
+  3. Call DLV.restart() if you ever need to show it again.
+-->
+<style>
+:root{
+  --dlv-ink:#14171c;          /* primary text / strokes        */
+  --dlv-paper:#ffffff;        /* surfaces                      */
+  --dlv-green:#12b76a;        /* brand accent: "on its way"    */
+  --dlv-green-dark:#0e9f5c;
+  --dlv-line:#e7e9ef;
+  --dlv-muted:#8b90a0;
+  --dlv-radius:16px;
+  --dlv-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+body{font-family:var(--dlv-font);margin:0;background:var(--dlv-paper);color:var(--dlv-ink)}
+section{max-width:760px;margin:0 auto;padding:40px 24px}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+p.sub{margin:0 0 32px;color:var(--dlv-muted);font-size:14px}
+.board{display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start}
+.item{display:flex;flex-direction:column;gap:8px}
+.item small{font-size:12px;color:var(--dlv-muted)}
+.tile{width:72px;height:72px;border-radius:var(--dlv-radius);background:var(--dlv-ink);display:flex;align-items:center;justify-content:center}
+.lockup{display:flex;align-items:center;gap:12px;padding-top:8px}
+.wordmark{font-size:32px;font-weight:600;letter-spacing:0;line-height:1.1}
+.wordmark em{font-style:normal;color:var(--dlv-green)}
+.demo-row{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.demo-row button{font:inherit;font-size:14px;padding:8px 16px;border-radius:8px;border:1px solid var(--dlv-line);background:var(--dlv-paper);color:var(--dlv-ink);cursor:pointer}
+.demo-row button.primary{background:var(--dlv-ink);color:var(--dlv-paper);border-color:var(--dlv-ink)}
+
+/* ---------- preloader ---------- */
+.dlv-overlay{position:fixed;inset:0;background:var(--dlv-paper);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:1;transition:opacity .45s ease, visibility .45s}
+.dlv-overlay.dlv-done{opacity:0;visibility:hidden;pointer-events:none}
+.dlv-card{display:flex;flex-direction:column;align-items:center;gap:20px;width:260px}
+.dlv-stage{position:relative;width:100%;height:120px}
+.dlv-truck{position:absolute;top:34px;left:0;width:96px;will-change:transform}
+.dlv-wheel{transform-box:fill-box;transform-origin:center;animation:dlv-spin .7s linear infinite}
+.dlv-speed{stroke-dasharray:6 6;animation:dlv-dash .5s linear infinite}
+.dlv-route{position:absolute;left:4px;right:4px;bottom:22px;height:4px;border-radius:999px;background:var(--dlv-line)}
+.dlv-route i{position:absolute;top:0;bottom:0;left:0;width:0%;border-radius:999px;background:var(--dlv-green)}
+.dlv-check{position:absolute;right:2px;bottom:38px;opacity:0;transform:scale(.4);transition:all .18s ease-out}
+.dlv-meta{display:flex;justify-content:space-between;align-items:baseline;width:100%}
+.dlv-pct{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.dlv-status{font-size:13px;color:var(--dlv-muted)}
+@keyframes dlv-spin{to{transform:rotate(360deg)}}
+@keyframes dlv-dash{to{stroke-dashoffset:-24}}
+@media (prefers-reduced-motion:reduce){.dlv-wheel,.dlv-speed{animation:none}}
+</style>
+</head>
+<body>
+
+<!-- ===== logo symbols: inject once, reuse with <use href="#dlv-mark"> ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="dlv-mark" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 30h8M6 40h8" class="dlv-a" stroke="var(--dlv-green)" stroke-width="4"/>
+    <rect x="18" y="24" width="40" height="32" rx="7" stroke="currentColor" stroke-width="4"/>
+    <path d="M24 24l6-8h18l6 8" stroke="currentColor" stroke-width="4"/>
+    <path d="M34 46L46 34m0 0h-8m8 0v8" class="dlv-a" stroke="var(--dlv-green)" stroke-width="4"/>
+  </symbol>
+  <symbol id="dlv-truck" viewBox="0 0 128 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g class="dlv-speed" stroke="var(--dlv-green)" stroke-width="3">
+      <path d="M4 28h12"/><path d="M0 38h16"/>
+    </g>
+    <g stroke="currentColor" stroke-width="4">
+      <rect x="20" y="12" width="54" height="38" rx="7"/>
+      <path d="M28 12l6-7h26l6 7"/>
+      <path d="M74 24h15l12 13v13H74z"/>
+      <path d="M89 24v11h11"/>
+    </g>
+    <path d="M38 42L52 28m0 0h-8m8 0v8" class="dlv-a" stroke="var(--dlv-green)" stroke-width="4"/>
+    <g class="dlv-wheel" stroke="currentColor" stroke-width="4">
+      <circle cx="38" cy="58" r="8"/><path d="M38 58v-6"/>
+    </g>
+    <g class="dlv-wheel" stroke="currentColor" stroke-width="4">
+      <circle cx="94" cy="58" r="8"/><path d="M94 58v-6"/>
+    </g>
+  </symbol>
+</svg>
+
+<section>
+  <h1>Deliveree brand kit</h1>
+  <p class="sub">Logo mark, lockups, and the drop-in preloader. Paste the symbols, CSS, overlay HTML, and script into your app, then call DLV.done() when ready.</p>
+
+  <div class="board">
+    <div class="item">
+      <div class="tile"><svg width="48" height="48" style="color:var(--dlv-paper)"><use href="#dlv-mark"/></svg></div>
+      <small>app icon</small>
+    </div>
+    <div class="item">
+      <div class="lockup">
+        <svg width="44" height="44"><use href="#dlv-mark"/></svg>
+        <span class="wordmark">deliver<em>ee</em></span>
+      </div>
+      <small>primary lockup</small>
+    </div>
+    <div class="item">
+      <svg width="44" height="44" style="color:var(--dlv-ink)"><use href="#dlv-mark"/></svg>
+      <small>standalone mark</small>
+    </div>
+    <div class="item">
+      <svg width="44" height="44" style="color:var(--dlv-green)"><use href="#dlv-mark"/></svg>
+      <small>all-accent</small>
+    </div>
+  </div>
+
+  <div class="demo-row">
+    <button class="primary" id="dlvDemoLoad">simulate app load (2.5s)</button>
+    <button id="dlvDemoShow">show preloader again</button>
+  </div>
+</section>
+
+<!-- ===== preloader overlay: copy into your page ===== -->
+<div class="dlv-overlay" id="dlv-preloader" role="status" aria-label="Loading">
+  <div class="dlv-card">
+    <svg width="56" height="56" style="color:var(--dlv-ink)"><use href="#dlv-mark"/></svg>
+    <div class="dlv-stage">
+      <div class="dlv-truck" id="dlvTruck">
+        <svg width="96" viewBox="0 0 128 72" style="display:block;color:var(--dlv-ink)"><use href="#dlv-truck"/></svg>
+      </div>
+      <div class="dlv-route"><i id="dlvFill"></i></div>
+      <div class="dlv-check" id="dlvCheck">
+        <svg width="26" height="26" viewBox="0 0 28 28">
+          <circle cx="14" cy="14" r="13" fill="var(--dlv-green)"/>
+          <path d="M8.5 14.5l4 4 7-8" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="dlv-meta">
+      <span class="dlv-pct" id="dlvPct">0%</span>
+      <span class="dlv-status" id="dlvStatus">en route</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var overlay=document.getElementById('dlv-preloader'),
+      truck=document.getElementById('dlvTruck'),
+      fill=document.getElementById('dlvFill'),
+      pct=document.getElementById('dlvPct'),
+      status=document.getElementById('dlvStatus'),
+      check=document.getElementById('dlvCheck'),
+      stage=truck.parentElement;
+  var t0=performance.now(),DUR=2600,raf,finished=false;
+  function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+  function frame(now){
+    if(finished){return}
+    var raw=Math.min((now-t0)/DUR,1), p=ease(raw);
+    var max=stage.clientWidth-truck.offsetWidth-8;
+    truck.style.transform='translateX('+(4+p*max)+'px)';
+    fill.style.width=(p*100)+'%';
+    pct.textContent=Math.round(p*100)+'%';
+    status.textContent='en route';
+    raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+  window.DLV={
+    done:function(){
+      if(finished){return}
+      finished=true; cancelAnimationFrame(raf);
+      truck.style.transform='translateX('+(4+(stage.clientWidth-truck.offsetWidth-8))+'px)';
+      fill.style.width='100%'; pct.textContent='100%';
+      status.textContent='delivered'; status.style.color='var(--dlv-green)';
+      check.style.opacity=1; check.style.transform='scale(1)';
+      setTimeout(function(){overlay.classList.add('dlv-done')},650);
+    },
+    restart:function(){
+      finished=false; overlay.classList.remove('dlv-done');
+      status.style.color=''; check.style.opacity=0; check.style.transform='scale(.4)';
+      t0=performance.now(); raf=requestAnimationFrame(frame);
+    }
+  };
+  document.getElementById('dlvDemoLoad').onclick=function(){setTimeout(DLV.done,2500)};
+  document.getElementById('dlvDemoShow').onclick=DLV.restart;
+})();
+</script>
+</body>
+</html>

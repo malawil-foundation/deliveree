@@ -1,0 +1,11 @@
+node_modules
+dist
+server/data.json
+server/.jwt-secret
+server/*.db
+server/*.db-journal
+server/*.db-wal
+server/*.db-shmserver/uploads/
+*.log
+*.pid
+.DS_Store
